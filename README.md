@@ -90,6 +90,7 @@ Or wasm (here, I use C, compiled with wasi-sdk)
 
 ```c
 #include "diego.h"
+#include <stdio.h>
 
 void host(DiegoProcess* process, int argc, char** argv) {
   printf("Connected: %s\n", process->device->os);
