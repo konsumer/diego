@@ -14,6 +14,7 @@ Frida already has a javascript-engine, built into the server/gadget, but this im
 - better API stability: it should work on any version of frida, without having to downgrade/upgrade server/gadget (needs testing)
 - more languages in the future: write your frida script directly in python or anything else that has diego-bindings
 - web GUI in the future
+- respond to messages sent from device in the same script that defines that
 
 
 ## installation
