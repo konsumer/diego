@@ -24,7 +24,7 @@ You need frida-server/gadget running somewhere. Once running, diego can push it'
 Diego is a bunjs-program, so if you already use that or nodejs, you can do this:
 
 ```js
-bun/npm install @konsumer/diego
+bun/npm install -g @konsumer/diego
 
 diego run examples/basicinfo.js
 ```
