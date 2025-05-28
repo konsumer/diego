@@ -7,8 +7,8 @@ const getPort = promisify(portfinder.getPort)
 const decoder = new TextDecoder()
 
 
-// wraps frida script with remote api
-export function wrapFrida(source) {
+// wraps frida script with diego API
+export function wrapFridaJs(source) {
   return `
 export default async function host(process, args) {
   import ObjC from 'frida-objc-bridge'
@@ -45,12 +45,12 @@ export async function commandRun(script, args, options, command) {
     options.source = (await fetch(`https://codeshare.frida.re/api/project/${options.codeshare}`).then(r => r.json())).source
     options.filename = `${options.codeshare}.js`
     options.type = 'remote'
-    options.source = wrapFrida(options.source)
+    options.source = wrapFridaJs(options.source)
   } else if (script.endsWith('.js')) {
     options.source = await readFile(script, 'utf8')
     options.filename = script
     options.type = 'local'
-    // TODO: check if I need to wrapFrida
+    // TODO: check if I need to wrapFridaJs
   }
 
   await run(options)
