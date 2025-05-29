@@ -12,6 +12,9 @@ const decoder = new TextDecoder();
 const yellow = Bun.color("yellow", "ansi");
 const white = Bun.color("white", "ansi");
 
+// trigger synhi on inline snippets
+const js = s => s.join('\n')
+
 const table = (a, options = {}) => {
   const t = new Table(options);
   for (const row of a) {
@@ -140,7 +143,7 @@ export async function commandLs(paths, options, command) {
     paths = ["/"];
   }
 
-  const source = `
+  const source = js`
 import fs from "fs";
 
 const paths = ${JSON.stringify(paths)}
@@ -149,9 +152,9 @@ for (const path of paths) {
   out.push(fs.readdirSync(path))
 }
 send(out)
-  `;
+`;
 
-  const hostScript = `
+  const hostScript = js`
 script.message.connect(({payload})=>{
     console.log(payload.map(l => l.join('\\n')).join('\\n\\n'))
     process.exit()
@@ -171,7 +174,8 @@ export async function commandInfo(options, command) {
   // ps:0 cannot get hostname (need to look into this) so I just use foreground app here
   options.device = await getDevice(options);
   const session = await getSession(options);
-  const source = `
+  
+  const source = js`
 function getHost() {
   if (!Java.available && !ObjC.available) {
     return null
@@ -208,7 +212,7 @@ send({
 })
 `;
 
-  const hostScript = `
+  const hostScript = js`
 const json = ${JSON.stringify(!!options.json)}
 script.message.connect(m => {
     if (!m?.payload) {
@@ -290,7 +294,7 @@ export async function run(options) {
     throw new Error("No app-session");
   }
 
-  const header = `
+  const header = js`
 import ObjC from "frida-objc-bridge";
 import Java from "frida-java-bridge";
 // import Swift from "frida-swift-bridge";
