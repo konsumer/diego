@@ -307,8 +307,10 @@ import Java from "frida-java-bridge";
       "_o",
       await compileCode(
         "host.js",
-        `const { script, device, session, filename } = _o
-        ${options.hostScript}`,
+        js`
+          const { script, device, session, filename } = _o
+          ${options.hostScript}
+        `,
       ),
     );
   }
