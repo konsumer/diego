@@ -141,14 +141,16 @@ export async function commandLs(paths, options, command) {
 import fs from "fs";
 
 const paths = ${JSON.stringify(paths)}
+const out = []
 for (const path of paths) {
-  send(fs.readdirSync(path))
+  out.push(fs.readdirSync(path))
 }
+send(out)
   `;
 
   const hostScript = `
 script.message.connect(({payload})=>{
-    console.log(payload.join('\\n'))
+    console.log(payload.map(l => l.join('\\n')).join('\\n\\n'))
     process.exit()
 })
 `;
