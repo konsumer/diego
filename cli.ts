@@ -34,6 +34,7 @@ program
   .option("-n, --attach-name <name>", "Attach/spawn <name>")
   .option("-N, --attach-identifier <identifier>", "Attach/spawn <identifier>")
   .option("-p, --attach-pid <pid>", "Attach to running <pid>")
+  .option("-e, --exit", "Exit after run")
   // .option('-H, --host', 'Connect to remote frida-server on HOST')
   .option("-D, --device <device>", "Connect to device with the given ID")
   .option("-U, --usb", "Connect to first USB device")
@@ -49,6 +50,15 @@ program
   .option("-D, --device <device>", "Connect to device with the given ID")
   .option("-U, --usb", "Connect to first USB device")
   .action(diego.commandLs);
+
+program
+  .command("info")
+  .summary("Get Info about a device")
+  .option("-j, --json", "Output results as JSON")
+  // .option('-H, --host', 'Connect to remote frida-server on HOST')
+  .option("-D, --device <device>", "Connect to device with the given ID")
+  .option("-U, --usb", "Connect to first USB device")
+  .action(diego.commandInfo);
 
 program
   .command("kill")

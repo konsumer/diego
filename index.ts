@@ -101,6 +101,9 @@ export async function commandRun(script, options, command) {
     }
 
     await run(options);
+    if (options.exit) {
+      process.exit()
+    }
   } catch (e) {
     console.error(`${e.message}\n`);
     command.help({ error: true });
@@ -157,6 +160,72 @@ script.message.connect(({payload})=>{
 
   await run({
     filename: "ls.js",
+    session,
+    source,
+    hostScript,
+  });
+}
+
+
+export async function commandInfo(options, command) {
+  // ps:0 cannot get hostname (need to look into this) so I just use foreground app here
+  options.device = await getDevice(options);
+  const session = await getSession(options);
+  const source = `
+function getHost() {
+  if (!Java.available && !ObjC.available) {
+    return null
+  }
+  if (ObjC.available) {
+    return ObjC.classes.NSHost.currentHost().name().toString()
+  } else {
+    return Java.use("java.net.InetAddress").getLocalHost().getHostName()
+  }
+}
+
+function getOsVersion() {
+  if (!Java.available && !ObjC.available) {
+    return null
+  }
+  if (ObjC.available) {
+    return ObjC.classes.UIDevice.currentDevice().systemVersion().toString()
+  } else {
+    return Java.androidVersion
+  }
+}
+
+send({
+  hostname: getHost(),
+  version: getOsVersion(),
+  frida: Frida.version,
+  id: Process.id,
+  arch: Process.arch,
+  platform: Process.platform,
+  temp: Process.getTmpDir(),
+  home: Process.getHomeDir(),
+  runtime: Script.runtime,
+  pointerSize: Process.pointerSize
+})
+`;
+
+  const hostScript = `
+const json = ${JSON.stringify(!!options.json)}
+script.message.connect(m => {
+    if (!m?.payload) {
+      console.error(m)
+      process.exit(1)
+    }
+    if (json) {
+      console.log(JSON.stringify(m.payload, null, 2))
+    }else{
+      console.table(m.payload)
+    }
+    process.exit()
+})
+`;
+
+  await run({
+    filename: "info.js",
     session,
     source,
     hostScript,
