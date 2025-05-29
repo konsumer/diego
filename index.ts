@@ -196,7 +196,7 @@ function getOsVersion() {
 
 send({
   hostname: getHost(),
-  version: getOsVersion(),
+  os: getOsVersion(),
   frida: Frida.version,
   id: Process.id,
   arch: Process.arch,
