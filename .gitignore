@@ -7,3 +7,5 @@
 
 # I often test with frida-tools, so ignore venv
 /venv/
+
+/dist/
