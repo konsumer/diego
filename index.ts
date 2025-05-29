@@ -251,7 +251,6 @@ export async function getSession(options = {}) {
   let {
     device,
     attachFrontmost,
-    file,
     attachName,
     attachIdentifier,
     attachPid,
@@ -264,7 +263,7 @@ export async function getSession(options = {}) {
     return device.attach(attachPid);
   }
 
-  if (!attachFrontmost && !file && !attachName && !attachIdentifier) {
+  if (!attachFrontmost && !attachName && !attachIdentifier) {
     attachFrontmost = true;
   }
 
@@ -275,6 +274,8 @@ export async function getSession(options = {}) {
     }
     return await device.attach(app.name);
   }
+
+  // TODO: handle attaching/spawning attachName/attachIdentifier
 }
 
 // util to get a device based on options
