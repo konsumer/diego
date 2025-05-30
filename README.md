@@ -53,10 +53,10 @@ diego ls-devices --help
 These are used in `run`. You can setup a host as well as device-script, and respond to `send` and call `rpc` stuff, and whatever you want. Here are the goblas you have access to:
 
 ```js
-script; // the current script (use script.exports for rpc, for example)
-device; // the current frida device object
-session; // the current frdia session (process with script attached)
-filename; // the current frida-script filename
+script // the current script (use script.exports for rpc, for example)
+device // the current frida device object
+session // the current frdia session (process with script attached)
+filename // the current frida-script filename
 ```
 
 Here is an example:

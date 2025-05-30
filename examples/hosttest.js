@@ -1,11 +1,11 @@
-console.log("hello from host");
+console.log('hello from host')
 
 console.log({
   filename,
   session,
   device,
-  script,
-});
+  script
+})
 
 // here you could use script.exports for rpc
 // or script.message.connect(cb)

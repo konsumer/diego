@@ -1,5 +1,5 @@
-const getHost = () => !Java.available && !ObjC.available  ? null : ObjC.available ? ObjC.classes.NSHost.currentHost().name().toString() : Java.use("java.net.InetAddress").getLocalHost().getHostName()
-const getOsVersion = () => !Java.available && !ObjC.available  ? null : ObjC.available ?  ObjC.classes.UIDevice.currentDevice().systemVersion().toString() : Java.androidVersion
+const getHost = () => (!Java.available && !ObjC.available ? null : ObjC.available ? ObjC.classes.NSHost.currentHost().name().toString() : Java.use('java.net.InetAddress').getLocalHost().getHostName())
+const getOsVersion = () => (!Java.available && !ObjC.available ? null : ObjC.available ? ObjC.classes.UIDevice.currentDevice().systemVersion().toString() : Java.androidVersion)
 
 console.log(
   JSON.stringify(
@@ -13,9 +13,9 @@ console.log(
       temp: Process.getTmpDir(),
       home: Process.getHomeDir(),
       runtime: Script.runtime,
-      pointerSize: Process.pointerSize,
+      pointerSize: Process.pointerSize
     },
     null,
-    2,
-  ),
-);
+    2
+  )
+)
