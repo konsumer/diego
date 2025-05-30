@@ -177,7 +177,7 @@ export async function run(options) {
     throw new Error('No app-session')
   }
 
-  const header = js`
+  const header = `
 import ObjC from "frida-objc-bridge";
 import Java from "frida-java-bridge";
 // import Swift from "frida-swift-bridge";
@@ -278,9 +278,6 @@ send({
 
 const AsyncFunction = async function () {}.constructor
 const decoder = new TextDecoder()
-
-// trigger synhi on inline snippets
-const js = (s) => s.join('\n')
 
 const table = (a, options = {}) => {
   const t = new Table(options)
