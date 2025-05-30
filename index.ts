@@ -6,6 +6,15 @@ import { basename, dirname } from 'node:path'
 import esbuild from 'esbuild'
 import Table from 'cli-tableau'
 
+// I could use Bun.color("red", "ansi") here but I want it to work in node, too
+const colors = {
+  white: '\u001b[38;2;255;255;255m',
+  red: '\u001b[38;2;255;0;0m',
+  yellow: '\u001b[38;2;255;255;0m'
+}
+
+// const render_icon = ({width, height}) => `\033]1337;File=inline=1;width=${width}px;height=${height}px;:${}\007`
+
 export async function commandRun(script, options, command) {
   try {
     if (!options.codeshare && !script) {
@@ -66,10 +75,70 @@ export async function commandDevices(options, command) {
 
   if (options.json) {
     console.log(JSON.stringify(info.keyed, null, 2))
-    return
+  } else {
+    showArrayTable(info)
   }
-  showArrayTable(info)
   process.exit()
+}
+
+export async function commandPs(options, command) {
+  const device = await getDevice(options)
+  const { applications, installed, json, excludeIcons } = options
+
+  if (!applications && installed) {
+    console.error(`-i cannot be used without -a\n`)
+    return command.help({ error: true })
+  }
+
+  let apps = (await device.enumerateApplications()).map((a) => ({
+    pid: a.pid,
+    name: a.name,
+    parameters: a.parameters,
+    identifier: a.identifier,
+    icon: a.icon
+  }))
+  if (applications && !installed) {
+    apps = apps.filter((a) => a.pid)
+  }
+
+  if (!applications && !installed) {
+    const mapps = (await device.enumerateProcesses()).map((a) => {
+      const app = apps.find((aa) => aa.pid === a.pid)
+      return {
+        pid: a.pid,
+        name: a.name,
+        parameters: a.parameters,
+        identifier: app?.identifier,
+        icon: app?.icon
+      }
+    })
+    apps = mapps
+  }
+
+  apps.sort(sortBy('pid'))
+
+  const info = simplifyArrayOfObjects(apps, ['pid', 'name', 'parameters', 'identifier'])
+
+  if (options.json) {
+    console.log(JSON.stringify(info.keyed, null, 2))
+  } else {
+    showArrayTable(info)
+  }
+}
+
+export async function commandKill(pids, options, command) {
+  const device = await getDevice(options)
+  for (let p of pids) {
+    if (!isNaN(p)) {
+      const processes = await device.enumerateProcesses()
+      p = processes.find((ps) => ps.pid === parseInt(p))?.name
+    }
+    try {
+      await device.kill(p)
+    } catch (e) {
+      console.error(`${p}: ${e.message}`)
+    }
+  }
 }
 
 export async function commandLs(paths, options, command) {
@@ -110,61 +179,6 @@ export async function commandLs(paths, options, command) {
   process.exit()
 }
 
-export async function commandPs(options, command) {
-  const device = await getDevice(options)
-  const { applications, installed, json, excludeIcons } = options
-
-  if (!applications && installed) {
-    console.error(`-i cannot be used without -a\n`)
-    return command.help({ error: true })
-  }
-
-  let apps = (await device.enumerateApplications()).map((a) => ({
-    pid: a.pid,
-    name: a.name,
-    parameters: a.parameters,
-    identifier: a.identifier
-  }))
-  if (applications && !installed) {
-    apps = apps.filter((a) => a.pid)
-  }
-
-  if (!applications && !installed) {
-    const mapps = (await device.enumerateProcesses()).map((a) => ({
-      pid: a.pid,
-      name: a.name,
-      parameters: a.parameters,
-      identifier: apps.find((aa) => aa.pid === a.pid)?.identifier
-    }))
-    apps = mapps
-  }
-
-  apps.sort(sortBy('pid'))
-
-  const info = simplifyArrayOfObjects(apps, ['pid', 'name', 'parameters', 'identifier'])
-
-  if (options.json) {
-    console.log(JSON.stringify(info.keyed, null, 2))
-    return
-  }
-  showArrayTable(info)
-}
-
-export async function commandKill(pids, options, command) {
-  const device = await getDevice(options)
-  for (let p of pids) {
-    if (!isNaN(p)) {
-      const processes = await device.enumerateProcesses()
-      p = processes.find((ps) => ps.pid === parseInt(p))?.name
-    }
-    try {
-      await device.kill(p)
-    } catch (e) {
-      console.error(`${p}: ${e.message}`)
-    }
-  }
-}
-
 // Run a script on device
 export async function run(options) {
   if (!options.source) {
@@ -190,9 +204,9 @@ import Java from "frida-java-bridge";
     script.message.connect((message) => {
       if (message.type === 'error') {
         const s = message.stack.replace(/^Error: /, '')
-        console.error(`${Bun.color('red', 'ansi')}ERROR${Bun.color('white', 'ansi')} ${s}`)
+        console.error(`${colors.red}ERROR${colors.white} ${s}`)
       } else {
-        console.log(`${Bun.color('yellow', 'ansi')}${message.type}${Bun.color('white', 'ansi')}`, message.payload)
+        console.log(`${colors.yellow}${message.type}${colors.white}`, message.payload)
       }
     })
   }

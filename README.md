@@ -4,12 +4,21 @@ diego is a tool that runs with Frida, and allows you to execute scripts and do s
 
 The name is a bit of a pun, with [Diego](https://en.wikipedia.org/wiki/Diego_Rivera), who was married to Frida Kahlo, but also it stands for *D*ata *I*nspection *E*nvironment for *G*uided *O*bservation.
 
+## features
+
+- Run host & device-scripts together
+- JSON output fopr everything
+- no python needed (uses bun)
+- more useful info on device/ps/etc
+
 ## installation
 
-Diego is a bunjs-program, so if you already, you can do this:
+Diego is a bunjs-program, so if you have that (or nodejs) already, you can do this:
 
-```js
+```sh
 bun i -g @konsumer/diego
+# or npm i -g @konsumer/diego
+# or npx @konsumer/diego
 
 diego run examples/basicinfo.js
 ```
