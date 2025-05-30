@@ -184,22 +184,25 @@ import Java from "frida-java-bridge";
 `
 
   const source = await compileCode(options.filename, header + options.source)
-  let hostfunction = () => {}
+
+  // default function
+  let hostfunction = (script, device, session, filename) => {
+    script.message.connect((message) => {
+      if (message.type === 'error') {
+        const s = message.stack.replace(/^Error: /, '')
+        console.error(`${Bun.color('red', 'ansi')}ERROR${Bun.color('white', 'ansi')} ${s}`)
+      } else {
+        console.log(`${Bun.color('yellow', 'ansi')}${message.type}${Bun.color('white', 'ansi')}`, message.payload)
+      }
+    })
+  }
+
   if (options.hostScript) {
-    hostfunction = new AsyncFunction(
-      '_o',
-      await compileCode(
-        'host.js',
-        js`
-          const { script, device, session, filename } = _o
-          ${options.hostScript}
-        `
-      )
-    )
+    hostfunction = new AsyncFunction('script, device, session, filename', await compileCode('host.js', options.hostScript))
   }
 
   options.script = await options.session.createScript(source)
-  const p = hostfunction(options)
+  const p = hostfunction(options.script, options.device, options.session, options.filename)
   await options.script.load()
   await p
 }
@@ -275,9 +278,6 @@ send({
 
 const AsyncFunction = async function () {}.constructor
 const decoder = new TextDecoder()
-
-const yellow = Bun.color('yellow', 'ansi')
-const white = Bun.color('white', 'ansi')
 
 // trigger synhi on inline snippets
 const js = (s) => s.join('\n')

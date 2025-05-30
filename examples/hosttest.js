@@ -7,6 +7,5 @@ console.log({
   script
 })
 
-// here you could use script.exports for rpc
-// or script.message.connect(cb)
-// or whatver you like
+// frida sends errors over this, so you should probly wire somehting up.
+script.message.connect((message) => console.log(message))
