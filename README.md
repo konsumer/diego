@@ -6,8 +6,6 @@ The name is a bit of a pun, with [Diego](https://en.wikipedia.org/wiki/Diego_Riv
 
 ## installation
 
-You need frida-server/gadget running somewhere. Once running, diego can push it's own service to the frida-server.
-
 Diego is a bunjs-program, so if you already, you can do this:
 
 ```js
@@ -15,8 +13,6 @@ bun i -g @konsumer/diego
 
 diego run examples/basicinfo.js
 ```
-
-If you prefer to not install bun on your system, you can also use a [compiled release](https://github.com/konsumer/diego/releases/).
 
 ## usage
 
@@ -62,5 +58,5 @@ filename // the current frida-script filename
 Here is an example:
 
 ```sh
-./cli.ts run -h examples/hosttest.js examples/basicinfo.js
+diego run -h examples/hosttest.js examples/basicinfo.js
 ```

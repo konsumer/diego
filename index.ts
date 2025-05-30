@@ -324,7 +324,7 @@ export async function compileCode(filename, code, options = {}) {
       stdin: {
         contents: code,
         sourcefile: filename,
-        resolveDir: './'
+        resolveDir: process.cwd()
       },
       alias: {
         assert: '@frida/assert',
